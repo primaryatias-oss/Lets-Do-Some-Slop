@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Slop Runner - A Three.js Platformer</title>
 <meta name="description" content="Slop Runner: a tiny 2D platformer proof of concept rendered with Three.js in a single HTML file.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -161,6 +161,16 @@ if (typeof THREE === 'undefined') {
   f.textContent = 'Could not load three.js from the CDN. Check your connection and reload.';
   throw new Error('three.js missing');
 }
+
+/* ---------------------------------------------------------------------
+   0b. NO ZOOM  (pinch, double-tap, ctrl+wheel, ctrl +/-)
+   --------------------------------------------------------------------- */
+['gesturestart', 'gesturechange', 'gestureend'].forEach((n) => document.addEventListener(n, (e) => e.preventDefault()));
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTouchEnd < 350) e.preventDefault(); lastTouchEnd = n; }, { passive: false });
+window.addEventListener('wheel', (e) => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+window.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0', '_'].includes(e.key)) e.preventDefault(); });
 
 /* ---------------------------------------------------------------------
    0. UTILS
